@@ -6,7 +6,7 @@ import logging
 import re
 from gunrskite import db
 
-logger = logging.getLogger("Gunrskite::Parser")
+logger = logging.getLogger("Gunrskite::Parse")
 
 get_inside_quotes = re.compile(r'\"(.+?)\"')
 username_regex = re.compile(r"([^<]*)<([0-9]*)><(\[U:[0-9]:[0-9]{0,9}])><([A-Z]?[a-z]{0,})?>")

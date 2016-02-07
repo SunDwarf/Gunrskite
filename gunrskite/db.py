@@ -24,6 +24,9 @@ class Event(Base):
 
     user_id = Column(Integer, ForeignKey("user.id"))
     server_id = Column(Integer, ForeignKey("server.id"))
+    server = relationship("Server", uselist=False)
+
+    date = Column(DateTime())
 
 
 class User(Base):
@@ -32,8 +35,8 @@ class User(Base):
     steamid = Column(String(255), unique=True)
     events = relationship(Event, uselist=True, backref='user')
 
-    kills = Column(Integer)
-    deaths = Column(Integer)
+    kills = Column(Integer, default=0)
+    deaths = Column(Integer, default=0)
 
     last_seen_name = Column(String(255))
 
@@ -46,3 +49,4 @@ class Server(Base):
 
     ip = Column(String(255), unique=True)
     port = Column(Integer)
+
