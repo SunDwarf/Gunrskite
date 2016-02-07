@@ -58,3 +58,4 @@ def consume(cfg, d: attrdict, server: db.Server, session):
     event.date = d.date
     session.add(event)
     session.commit()
+    session.close()

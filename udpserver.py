@@ -7,6 +7,8 @@ import asyncio
 import logging
 import os
 
+import sqlalchemy
+
 from gunrskite import parser as gparse
 from gunrskite import db as db
 from gunrskite import consumer as consumer
@@ -46,7 +48,12 @@ class LoggerProtocol(object):
             logger.error("Recieved message from unknown server! Address: {} / Ignoring".format(addr))
             return
         msgdata = gparse.parse(data, server)
-        consumer.consume(cfg, msgdata, server, session)
+        try:
+            consumer.consume(cfg, msgdata, server, session)
+        except sqlalchemy.exc.InvalidRequestError:
+            logger.error("MySQL has suddenly gained dementia - rolling back transactions")
+            if session.is_active:
+                session.rollback()
 
 
 def __main__():
