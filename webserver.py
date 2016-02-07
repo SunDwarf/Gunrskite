@@ -3,8 +3,11 @@ Web panel for srcds, using gunrskite.
 """
 import logging
 
-from flask import Flask
+import time
+from flask import Flask, g
 import flask_sqlalchemy
+from flask.ext.security import SQLAlchemyUserDatastore
+
 from gunrskite import db
 from threading import Lock
 
@@ -39,6 +42,7 @@ class FakeSQLAlchemy(flask_sqlalchemy.SQLAlchemy):
     A FakeSQLAlchemy class wraps the manual database handling in a bit of mapping, and lets Flask-SQLAlchemy take
     over if needed.
     """
+
     def __init__(self, app=None, use_native_unicode=True, session_options=None, metadata=None):
         if session_options is None:
             session_options = {}
@@ -55,13 +59,30 @@ class FakeSQLAlchemy(flask_sqlalchemy.SQLAlchemy):
         if app is not None:
             self.init_app(app)
 
-sqlalchemy = FakeSQLAlchemy()
+
+sqlalchemy = FakeSQLAlchemy(app)
 db.db = sqlalchemy
 
 logger.info("SQLAlchemy binding created with engine {}".format(db.engine))
 
 # --> Flask-Security
+user_datastore = SQLAlchemyUserDatastore(db.db, db.User, db.Role)
 
+# --> Flask-DebugToolbar
+from flask_debugtoolbar import DebugToolbarExtension
+
+toolbar = DebugToolbarExtension(app)
+
+# --> Register blueprints
+from webpanel import routes
+
+app.register_blueprint(routes.routes_bp)
+
+
+@app.before_request
+def before_request():
+    g.request_start_time = time.time()
+    g.request_time = lambda: "%.5fs" % (time.time() - g.request_start_time)
 
 if __name__ == "__main__":
     app.run("0.0.0.0")

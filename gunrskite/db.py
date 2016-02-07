@@ -21,7 +21,7 @@ db = None
 def create_sess():
     session_factory = sessionmaker(bind=engine)
     Session = scoped_session(session_factory)
-    return engine, Session
+    return Session
 
 
 class Event(Base):
@@ -44,19 +44,9 @@ class User(Base):
     steamid = Column(String(255), unique=True)
     events = relationship(Event, uselist=True, backref='user')
 
-    kills = Column(Integer, default=0)
-    deaths = Column(Integer, default=0)
-
     last_seen_name = Column(String(255))
 
     points = Column(Integer)
-
-
-# Define panel models
-roles_users = Table('roles_users', Base.metadata,
-                    Column('user_id', Integer(), ForeignKey('panel_user.id')),
-                    Column('role_id', Integer(), ForeignKey('role.id')))
-
 
 class Server(Base):
     __tablename__ = "server"
@@ -64,6 +54,28 @@ class Server(Base):
 
     ip = Column(String(255), unique=True)
     port = Column(Integer)
+
+
+class ServerUser(Base):
+    __tablename__ = "server_user"
+    id = Column(Integer, primary_key=True)
+
+    points = Column(Integer, default=cfg["INITIAL_POINTS"])
+
+    user_id = Column(Integer, ForeignKey(User.id))
+    user = relationship(User)
+
+    server_id = Column(Integer, ForeignKey(Server.id))
+    server = relationship(Server)
+
+    kills = Column(Integer, default=0, nullable=False)
+    deaths = Column(Integer, default=0, nullable=False)
+
+
+# Define panel models
+roles_users = Table('roles_users', Base.metadata,
+                    Column('user_id', Integer(), ForeignKey('panel_user.id')),
+                    Column('role_id', Integer(), ForeignKey('role.id')))
 
 
 class PanelUser(Base):

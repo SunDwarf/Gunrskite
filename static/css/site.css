@@ -1,0 +1,61 @@
+body {
+    background-color: #eeeeee;
+}
+
+.input-wrapper {
+    margin-top: 80px;
+    margin-bottom: 20px;
+}
+
+.form-signin {
+    max-width: 420px;
+    padding: 30px 38px 66px;
+    margin: 0 auto;
+    background-color: #eee;
+    border: 3px dotted rgba(0,0,0,0.1);
+}
+
+.form-signin-heading {
+    text-align:center;
+    margin-bottom: 30px;
+}
+
+.form-control {
+    position: relative;
+    font-size: 16px;
+    height: auto;
+    padding: 10px;
+}
+
+.panel-nopad {
+    padding-left: 0;
+    padding-right: 0;
+}
+
+.panel-title > a {
+    color: #18bc9c;
+}
+
+.bottom-align {
+    position: absolute;
+    bottom: 0;
+}
+.footer {
+    position: absolute;
+    bottom: 0;
+    display: inherit;
+    width: inherit;
+    /* Set the fixed height of the footer here */
+    height: 60px;
+    text-align: center;
+}
+
+
+@media screen and (min-width: 768px) {
+    .row {
+        display: -webkit-box;
+        display: -webkit-flex;
+        display: -ms-flexbox;
+        display: flex;
+    }
+}

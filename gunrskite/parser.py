@@ -10,7 +10,7 @@ logger = logging.getLogger("Gunrskite::Parse")
 
 get_inside_quotes = re.compile(r'\"(.+?)\"')
 username_regex = re.compile(r"([^<]*)<([0-9]*)><(\[U:[0-9]:[0-9]{0,9}])><([A-Z]?[a-z]{0,})?>")
-ingame_actions = re.compile(r"(say|killed|committed suicide with|joined team|changed role to|triggered)")
+ingame_actions = re.compile(r"(say|killed|committed suicide with|joined team|changed role to)")
 misc_actions = re.compile(r"(connected|entered the game|disconnected)")
 
 attrdict = type("AttrDict", (dict,), {"__getattr__": dict.__getitem__, "__setattr__": dict.__setitem__})
@@ -44,7 +44,7 @@ def parse_user(action, d: attrdict, data: str):
         d.killed = True
         d.suicide = True
         d.method = get_inside_quotes.findall(data)[1]
-        logger.debug("Player {} ({}) killed self with {}".format(d.steamid, d.displayname, d.method))
+        logger.info("Player {} ({}) killed self with {}".format(d.steamid, d.displayname, d.method))
     elif d.action == "joined team":
         d.new_team = get_inside_quotes.findall(data)[1]
         logger.info("Player {} ({}) switched team to {}".format(d.steamid, d.displayname, d.new_team))

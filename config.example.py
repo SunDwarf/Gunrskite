@@ -10,6 +10,8 @@ LISTENER_BIND = (
     23887  # Port to bind to.
 )
 
+# Some long and utterly unguessable secret key here.
+SECRET_KEY = 'yourkeyhere'
 
 # Gunrskite settings.
 INITIAL_POINTS = 1000

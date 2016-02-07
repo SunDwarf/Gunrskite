@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+        <meta http-equiv="x-ua-compatible" content="ie=edge">
+
+        <title>{% if title is defined %}{{ title }} | {% endif %}Gunrskite</title>
+
+
+        <link href="{{ url_for("static", filename="external/css/bootstrap.min.css") }}" rel="stylesheet">
+        <link href="{{ url_for("static", filename="external/css/flatly.css") }}" rel="stylesheet">
+        <link href="{{ url_for("static", filename="css/site.css") }}" rel="stylesheet">
+        <style>
+            {% block customstyle %}
+
+            {% endblock %}
+        </style>
+
+        {% block _customhead %}
+        {% endblock %}
+        {% block customhead %}
+        {% endblock %}
+
+    </head>
+    <body>
+
+        {% block body %}
+            {# Add body content here. #}
+        {% endblock %}
+
+        <!-- JS Scripts at the end of the body -->
+        <script src="{{ url_for("static", filename="external/js/jquery-2.1.4.min.js") }}"></script>
+        <script src="{{ url_for("static", filename="external/js/bootstrap.min.js") }}"></script>
+        {% block scripts %}
+        {% endblock %}
+    </body>
+</html>

@@ -14,12 +14,15 @@ from gunrskite import db as db
 from gunrskite import consumer as consumer
 from flask import Config
 
+cfg = Config(os.path.abspath("."))
+cfg.from_pyfile("config.py")
+
 loop = asyncio.get_event_loop()
 
 formatter = logging.Formatter('%(asctime)s - [%(levelname)s] %(name)s -> %(message)s')
 root = logging.getLogger()
 
-root.setLevel(logging.DEBUG)
+root.setLevel(cfg.get("LOG_LEVEL", logging.INFO))
 
 consoleHandler = logging.StreamHandler()
 consoleHandler.setFormatter(formatter)
@@ -27,13 +30,9 @@ root.addHandler(consoleHandler)
 
 logger = logging.getLogger("Gunrskite::Listener")
 
-logging.getLogger("sqlalchemy").setLevel(logging.DEBUG)
+logging.getLogger("sqlalchemy").setLevel(cfg.get("SQLALCHEMY_LOG_LEVEL", logging.CRITICAL))
 
-
-cfg = Config(os.path.abspath("."))
-cfg.from_pyfile("config.py")
-
-sql_engine, session = db.create_sess()
+session = db.create_sess()
 
 
 class LoggerProtocol(object):
@@ -41,7 +40,7 @@ class LoggerProtocol(object):
         self.transport = transport
 
     def datagram_received(self, data, addr):
-        logger.info("Recieved message {} from {}".format(data, addr))
+        logger.debug("Recieved message {} from {}".format(data, addr))
         # Get server.
         server = session.query(db.Server).filter(db.Server.ip == addr[0], db.Server.port == addr[1]).first()
         if not server:
@@ -59,8 +58,6 @@ class LoggerProtocol(object):
 def __main__():
     logger.info("Gunrskite logging server loading")
     logger.info("Database is connected on {}".format(cfg["SQLALCHEMY_URI"]))
-    # Try and create the database.
-    db.Base.metadata.create_all(sql_engine)
     logger.info("Binding on UDP to {}:{}".format(*cfg["LISTENER_BIND"]))
     listen_server = loop.create_datagram_endpoint(
         LoggerProtocol, local_addr=cfg["LISTENER_BIND"])
@@ -73,6 +70,7 @@ def __main__():
 
     transport.close()
     loop.close()
+
 
 if __name__ == "__main__":
     __main__()
