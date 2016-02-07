@@ -8,7 +8,7 @@ import re
 logger = logging.getLogger("Gunrskite-udp")
 
 get_inside_quotes = re.compile(r'\"(.+?)\"')
-username_regex = re.compile(r"([^<]*)(<[0-9]*>)(<\[U:[0-9]:[0-9]{0,9}]>)(<[A-Z][a-z]{2,}>)")
+username_regex = re.compile(r"([^<]*)<([0-9]*)><(\[U:[0-9]:[0-9]{0,9}])><([A-Z][a-z]{2,})>")
 actions = re.compile(r"(say|killed|committed suicide with|joined team|changed role to)")
 
 attrdict = type("AttrDict", (dict,), {"__getattr__": dict.__getitem__, "__setattr__": dict.__setitem__})
@@ -22,11 +22,13 @@ def parse_user(d: attrdict, data: str):
     logger.debug("Display Name: {} / Player ID: {} / SteamID: {} / Team: {}".format(*d._username_data))
     d.displayname, d.playerid, d.steamid, d.team = d._username_data
 
+    # Parse action data
     d.action = actions.findall(data)[0]
     if d.action == "say":
         d.msg = get_inside_quotes.findall(data)[1]
         logger.info("Player {} said: {}".format(d.steamid, d.msg))
     elif d.action == "killed":
+        d.killed = True; d.suicide = False
         target = get_inside_quotes.findall(data)[1]
         logger.debug("Target: {}".format(target))
         d.target = attrdict()
@@ -35,6 +37,12 @@ def parse_user(d: attrdict, data: str):
         d.killer_weapon = get_inside_quotes.findall(data)[2]
         logger.info("Player {} ({}) killed {} ({}) with {}"
                     .format(d.steamid, d.displayname, d.target.steamid, d.target.displayname, d.killer_weapon))
+    elif d.action == "committed suicide with":
+        d.killed = True; d.suicide = True
+        d.method = get_inside_quotes.findall(data)[1]
+        logger.debug("Player {} ({}) killed self with {}".format(d.steamid, d.displayname, d.method))
+    elif d.action == "joined team":
+        pass
 
 def parse(data):
     d = attrdict()
