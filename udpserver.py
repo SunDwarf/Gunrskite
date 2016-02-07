@@ -6,6 +6,7 @@ Binds to 0.0.0.0:23887 by default.
 import asyncio
 import logging
 import argparse
+from gunrskite import parser as gparse
 
 loop = asyncio.get_event_loop()
 
@@ -31,8 +32,9 @@ class LoggerProtocol(object):
         self.transport = transport
 
     def datagram_received(self, data, addr):
-        message = data.decode()
-        logger.info("Recieved message {}".format(message))
+        logger.info("Recieved message {}".format(data))
+        msgdata = gparse.parse(data)
+        print(msgdata)
 
 
 def __main__():
