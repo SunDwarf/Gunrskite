@@ -31,7 +31,7 @@ logging.getLogger("sqlalchemy").setLevel(logging.DEBUG)
 cfg = Config(os.path.abspath("."))
 cfg.from_pyfile("config.py")
 
-sql_engine, session = db.create_sess(cfg["SQLALCHEMY_URI"])
+sql_engine, session = db.create_sess()
 
 
 class LoggerProtocol(object):

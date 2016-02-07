@@ -1,15 +1,24 @@
-from sqlalchemy import create_engine, Column, Integer, String, Table, DateTime, exists, ForeignKey
+import os
+
+from flask.ext.security import RoleMixin
+from sqlalchemy import create_engine, Column, Integer, String, Table, DateTime, exists, ForeignKey, Boolean
 from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy.orm import sessionmaker, relationship
+from sqlalchemy.orm import sessionmaker, relationship, backref
 from sqlalchemy.orm import scoped_session
 from . import jsonalchemy
+from flask import Config
+
+cfg = Config(os.path.abspath("."))
+cfg.from_pyfile("config.py")
 
 Base = declarative_base()
+engine = create_engine(cfg["SQLALCHEMY_URI"])
+
+db = None
 
 
 # Function for creating the engine and session.
-def create_sess(uri):
-    engine = create_engine(uri)
+def create_sess():
     session_factory = sessionmaker(bind=engine)
     Session = scoped_session(session_factory)
     return engine, Session
@@ -43,6 +52,12 @@ class User(Base):
     points = Column(Integer)
 
 
+# Define panel models
+roles_users = Table('roles_users', Base.metadata,
+                    Column('user_id', Integer(), ForeignKey('panel_user.id')),
+                    Column('role_id', Integer(), ForeignKey('role.id')))
+
+
 class Server(Base):
     __tablename__ = "server"
     id = Column(Integer, primary_key=True)
@@ -50,3 +65,20 @@ class Server(Base):
     ip = Column(String(255), unique=True)
     port = Column(Integer)
 
+
+class PanelUser(Base):
+    __tablename__ = "panel_user"
+    id = Column(Integer, primary_key=True)
+    email = Column(String(255), unique=True)
+    password = Column(String(255))
+    active = Column(Boolean())
+    confirmed_at = Column(DateTime())
+    roles = relationship('Role', secondary=roles_users,
+                         backref=backref('users', lazy='dynamic'))
+
+
+class Role(Base, RoleMixin):
+    __tablename__ = "role"
+    id = Column(Integer(), primary_key=True)
+    name = Column(String(80), unique=True)
+    description = Column(String(255))
