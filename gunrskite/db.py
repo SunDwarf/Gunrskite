@@ -12,7 +12,7 @@ cfg = Config(os.path.abspath("."))
 cfg.from_pyfile("config.py")
 
 Base = declarative_base()
-engine = create_engine(cfg["SQLALCHEMY_URI"])
+engine = create_engine(cfg["SQLALCHEMY_URI"], pool_recycle=3600)
 
 db = None
 
@@ -47,6 +47,7 @@ class User(Base):
     last_seen_name = Column(String(255))
 
     points = Column(Integer)
+
 
 class Server(Base):
     __tablename__ = "server"

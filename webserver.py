@@ -2,17 +2,18 @@
 Web panel for srcds, using gunrskite.
 """
 import logging
-
 import time
-from flask import Flask, g
+from threading import Lock
+
 import flask_sqlalchemy
+from flask import g
+from flask.ext.cache import Cache
 from flask.ext.security import SQLAlchemyUserDatastore
 
 from gunrskite import db
-from threading import Lock
 
 # --> App init
-app = Flask("Gunrskite")
+from wser_app import app
 
 # --> Load config
 app.config.from_pyfile("config.py")
@@ -67,6 +68,11 @@ logger.info("SQLAlchemy binding created with engine {}".format(db.engine))
 
 # --> Flask-Security
 user_datastore = SQLAlchemyUserDatastore(db.db, db.User, db.Role)
+
+# --> Flask-Cache
+cache = Cache(app, config={'CACHE_TYPE': 'simple'})
+# Blerg
+app.fl_cache = cache
 
 # --> Flask-DebugToolbar
 from flask_debugtoolbar import DebugToolbarExtension

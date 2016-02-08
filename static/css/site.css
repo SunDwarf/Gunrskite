@@ -50,6 +50,11 @@ body {
     text-align: center;
 }
 
+td.server-name {
+    font-weight: bold;
+    font-family: 'Bitstream Vera Sans Mono', 'DejaVu Sans Mono', 'Monaco', Courier, monospace;
+}
+
 
 @media screen and (min-width: 768px) {
     .row {

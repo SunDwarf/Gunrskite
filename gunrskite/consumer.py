@@ -53,7 +53,7 @@ def consume(cfg, d: attrdict, server: db.Server, session):
                 session.add(ukilled)
             killed = session.query(db.ServerUser) \
                 .join(db.ServerUser.user).join(db.ServerUser.server) \
-                .filter(db.ServerUser.user == ukilled, db.ServerUser.server == server)
+                .filter(db.ServerUser.user == ukilled, db.ServerUser.server == server).first()
             if killed:
                 killed.points -= cfg["POINTS_LOST_ON_DEATH"]
                 killed.deaths = (killed.deaths + 1) if killed.deaths else 1

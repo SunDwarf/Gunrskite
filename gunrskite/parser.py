@@ -100,5 +100,6 @@ def parse(data, server: db.Server):
             parse_misc(maf[0], d, chopped)
         else:
             logger.info("Message did not meet any server information, skipping.")
+            return None
 
     return d

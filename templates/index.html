@@ -1,7 +1,19 @@
 {% extends "_layout/with_navbar.html" %}
 
 {% block content %}
-<div class="container">
-
-</div>
+    <div class="container">
+        <table class="table table-bordered table-striped">
+                <tr>
+                    <th width="60%">Server</th>
+                    <th width="20%">Top Player</th>
+                    <th width="20%">Total Points</th>
+                </tr>
+            {% for server in servers %}
+                <tr>
+                    <td class="server-name">{{ server.server_name }}</td>
+                    <td>{{  }}</td>
+                </tr>
+            {% endfor %}
+        </table>
+    </div>
 {% endblock %}
