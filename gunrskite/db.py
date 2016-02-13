@@ -35,6 +35,8 @@ class Event(Base):
     server_id = Column(Integer, ForeignKey("server.id"))
     server = relationship("Server", uselist=False)
 
+    action = Column(String(255))
+
     date = Column(DateTime())
 
 

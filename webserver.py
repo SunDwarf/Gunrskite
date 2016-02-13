@@ -31,7 +31,7 @@ root.addHandler(consoleHandler)
 
 logger = logging.getLogger("Gunrskite::Webpanel")
 
-logging.getLogger("sqlalchemy").setLevel(logging.DEBUG)
+logging.getLogger("sqlalchemy").setLevel(app.config.get("SQLALCHEMY_LOG_LEVEL", logging.CRITICAL))
 
 logger.info("Gunrskite server loading...")
 

@@ -36,6 +36,11 @@ def consume(cfg, d: attrdict, server: db.Server, session):
     if d.action == "say":
         event_data = {"action": "say", "msg": d.msg}
         event = db.Event(event_data=event_data)
+    elif d.action == "connected":
+        event_data = {"action": "connected", "addr": d.addr}
+        user.last_seen_name = d.displayname
+        event = db.Event(event_data=event_data)
+        session.add(user)
     elif d.get("killed", False):
         if d.suicide:
             weapon = d.method
