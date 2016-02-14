@@ -55,6 +55,11 @@ td.server-name {
     font-family: 'Bitstream Vera Sans Mono', 'DejaVu Sans Mono', 'Monaco', Courier, monospace;
 }
 
+.mini-avatar {
+    height: 24px;
+    width: 24px;
+}
+
 
 @media screen and (min-width: 768px) {
     .row {

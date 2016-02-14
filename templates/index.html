@@ -9,14 +9,16 @@
                     <th width="20%">Total Points</th>
                 </tr>
             {% for server in servers %}
+                {% set top_player = renderutils.get_top_player(server[1])  %}
                 <tr>
                     <td class="server-name">{{ server[0].server_name }}</td>
                     <td>
-                        <span style="color:
-                        {% if server[0].player_count == server[0].max_players %}red{% else %}#0080C0">{% endif %}
+                        <span style="color:{% if server[0].player_count == server[0].max_players %}red{% else %}#0080C0{% endif %}">
                         {{ server[0].player_count }} / {{ server[0].max_players }}
                     </span></td>
-                    <td>{{ renderutils.get_top_player(server[1]).user.last_seen_name }}</td>
+                    <td>{{ renderutils.get_steam_avatar(top_player.user.steamid, "mini-avatar")|safe }}
+                        {{ top_player.user.last_seen_name }}</td>
+                    <td>{{ '{:,}'.format(renderutils.get_all_points(server[1])) }}</td>
                 </tr>
             {% endfor %}
         </table>
