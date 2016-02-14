@@ -4,14 +4,11 @@ Web panel for srcds, using gunrskite.
 import logging
 import time
 from threading import Lock
-
 import flask_sqlalchemy
-from flask import g
+from flask import g, render_template
 from flask.ext.cache import Cache
 from flask.ext.security import SQLAlchemyUserDatastore
-
 from gunrskite import db
-
 # --> App init
 from wser_app import app
 
@@ -85,10 +82,17 @@ from webpanel import routes
 app.register_blueprint(routes.routes_bp)
 
 
+# --> Register error handlers
+@app.errorhandler(404)
+def e404(e):
+    return render_template("errors/404.html"), 404
+
+
 @app.before_request
 def before_request():
     g.request_start_time = time.time()
     g.request_time = lambda: "%.5fs" % (time.time() - g.request_start_time)
+
 
 if __name__ == "__main__":
     app.run("0.0.0.0")
