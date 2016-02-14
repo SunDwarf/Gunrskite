@@ -1,6 +1,7 @@
+import logging
 import os
-
 from flask.ext.security import RoleMixin
+from flask.ext.sqlalchemy import SQLAlchemy
 from sqlalchemy import create_engine, Column, Integer, String, Table, DateTime, exists, ForeignKey, Boolean
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker, relationship, backref
@@ -11,10 +12,19 @@ from flask import Config
 cfg = Config(os.path.abspath("."))
 cfg.from_pyfile("config.py")
 
-Base = declarative_base()
-engine = create_engine(cfg["SQLALCHEMY_URI"], pool_recycle=3600)
+db = SQLAlchemy()
 
-db = None
+logger = logging.getLogger("Gunrskite::Database")
+
+# Check if we're inside the UDP listener, or not.
+if os.environ.get("INSIDE_LISTENER", "n") == "y":
+    print("Using declarative_base() for model base.")
+    Base = declarative_base()
+else:
+    # Switch to using Flask-SQLAlchemy's model.
+    print("Using db.Model for model base.")
+    Base = db.Model
+engine = create_engine(cfg["SQLALCHEMY_DATABASE_URI"], pool_recycle=3600)
 
 
 # Function for creating the engine and session.

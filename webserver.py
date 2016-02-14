@@ -34,33 +34,7 @@ logger.info("Gunrskite server loading...")
 
 
 # --> Bind SQLAlchemy
-
-class FakeSQLAlchemy(flask_sqlalchemy.SQLAlchemy):
-    """
-    A FakeSQLAlchemy class wraps the manual database handling in a bit of mapping, and lets Flask-SQLAlchemy take
-    over if needed.
-    """
-
-    def __init__(self, app=None, use_native_unicode=True, session_options=None, metadata=None):
-        if session_options is None:
-            session_options = {}
-
-        session_options.setdefault('scopefunc', flask_sqlalchemy.connection_stack.__ident_func__)
-        self.use_native_unicode = use_native_unicode
-        self.session = db.create_sess()
-        self.Model = db.Base
-        self.Query = flask_sqlalchemy.BaseQuery
-        self._engine_lock = Lock()
-        self.app = app
-        flask_sqlalchemy._include_sqlalchemy(self)
-
-        if app is not None:
-            self.init_app(app)
-
-
-sqlalchemy = FakeSQLAlchemy(app)
-db.db = sqlalchemy
-
+db.db.init_app(app)
 logger.info("SQLAlchemy binding created with engine {}".format(db.engine))
 
 # --> Flask-Security

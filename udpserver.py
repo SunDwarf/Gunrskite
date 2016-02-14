@@ -6,11 +6,12 @@ Binds to 0.0.0.0:23887 by default.
 import asyncio
 import logging
 import os
+os.environ["INSIDE_LISTENER"] = "y"
+
 
 import sqlalchemy
 
 from gunrskite import parser as gparse
-from gunrskite import db as db
 from gunrskite import consumer as consumer
 from flask import Config
 
@@ -31,6 +32,9 @@ root.addHandler(consoleHandler)
 logger = logging.getLogger("Gunrskite::Listener")
 
 logging.getLogger("sqlalchemy").setLevel(cfg.get("SQLALCHEMY_LOG_LEVEL", logging.CRITICAL))
+
+# Load database
+from gunrskite import db
 
 session = db.create_sess()
 
@@ -59,7 +63,7 @@ class LoggerProtocol(object):
 
 def __main__():
     logger.info("Gunrskite logging server loading")
-    logger.info("Database is connected on {}".format(cfg["SQLALCHEMY_URI"]))
+    logger.info("Database is connected on {}".format(cfg["SQLALCHEMY_DATABASE_URI"]))
     logger.info("Binding on UDP to {}:{}".format(*cfg["LISTENER_BIND"]))
     listen_server = loop.create_datagram_endpoint(
         LoggerProtocol, local_addr=cfg["LISTENER_BIND"])

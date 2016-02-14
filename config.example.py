@@ -2,7 +2,7 @@
 # Copy this to config.py and edit as appropriate.
 
 # SQLAlchemy database URI.
-SQLALCHEMY_URI = "mysql+pymysql://gunrskite:gunrskite@localhost:3306/gunrskite"
+SQLALCHEMY_DATABASE_URI = "mysql+pymysql://gunrskite:gunrskite@localhost:3306/gunrskite"
 
 # UDP listener bind data.
 LISTENER_BIND = (
