@@ -60,6 +60,9 @@ class User(Base):
 
     points = Column(Integer)
 
+    def __repr__(self):
+        return "<User {} ({} / {})>".format(self.id, self.steamid, self.last_seen_name)
+
 
 class Server(Base):
     __tablename__ = "server"

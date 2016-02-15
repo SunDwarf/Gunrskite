@@ -23,6 +23,9 @@ def consume(cfg, d: attrdict, server: db.Server, session):
         # Create a user.
         user = db.User(steamid=d.steamid, last_seen_name=d.displayname)
         session.add(user)
+        logger.debug("Added new user: {}".format(user))
+    else:
+        logger.debug("Loaded user: {}".format(user))
     suser = session \
         .query(db.ServerUser) \
         .join(db.ServerUser.user).join(db.ServerUser.server) \
@@ -32,6 +35,9 @@ def consume(cfg, d: attrdict, server: db.Server, session):
         suser.user = user
         suser.server = server
         session.add(suser)
+        logger.debug("Added new SUser: User {} / Points {}".format(user, suser.points))
+    else:
+        logger.debug("Loading SUser for server {} with points {}".format(server, suser.points))
     # More switches for actions.
     if d.action == "say":
         event_data = {"action": "say", "msg": d.msg}
@@ -81,5 +87,3 @@ def consume(cfg, d: attrdict, server: db.Server, session):
     event.server = server
     event.date = d.date
     session.add(event)
-    session.commit()
-    session.close()

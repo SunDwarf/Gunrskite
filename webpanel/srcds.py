@@ -2,8 +2,6 @@
 Srcds utilities.
 """
 import requests
-from flask import abort
-
 from wser_app import app
 from flask_cache import Cache
 
@@ -20,7 +18,7 @@ steamid64ident = 76561197960265728
 
 def get_server_info(ip, port):
     # Ping the server.
-    querier = a2s.ServerQuerier((ip, port))
+    querier = a2s.ServerQuerier((ip, port), timeout=app.config.get("SRCDS_TIMEOUT", 1))
     try:
         return dict(querier.get_info())
     except a2s.NoResponseError:

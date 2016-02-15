@@ -53,12 +53,14 @@ class LoggerProtocol(object):
         msgdata = gparse.parse(data, server)
         if not msgdata:
             return
+        consumer.consume(cfg, msgdata, server, session)
         try:
-            consumer.consume(cfg, msgdata, server, session)
-        except sqlalchemy.exc.InvalidRequestError:
-            logger.error("MySQL has suddenly gained dementia - rolling back transactions")
-            if session.is_active:
-                session.rollback()
+            session.commit()
+        except:
+            # Goddamnit MySQL.
+            session.rollback()
+            logger.error("Rolling back session due to error in transaction.")
+
 
 
 def __main__():
