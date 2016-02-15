@@ -32,7 +32,6 @@ logging.getLogger("sqlalchemy").setLevel(app.config.get("SQLALCHEMY_LOG_LEVEL", 
 
 logger.info("Gunrskite server loading...")
 
-
 # --> Bind SQLAlchemy
 db.db.init_app(app)
 logger.info("SQLAlchemy binding created with engine {}".format(db.engine))
@@ -54,6 +53,16 @@ toolbar = DebugToolbarExtension(app)
 from webpanel import routes
 
 app.register_blueprint(routes.routes_bp)
+
+# --> Register logger debug filter
+app.jinja_env.filters["log_debug"] = logger.debug
+
+# --> Add a small selection of builtins.
+app.jinja_env.globals["int"] = int
+app.jinja_env.globals["str"] = str
+app.jinja_env.globals["float"] = float
+app.jinja_env.globals["enumerate"] = enumerate
+app.jinja_env.globals["round"] = round
 
 
 # --> Register error handlers

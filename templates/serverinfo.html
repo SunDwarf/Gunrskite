@@ -1,1 +1,53 @@
 {% extends "_layout/with_navbar.html" %}
+
+{% set serverinfo = srcds.get_server_info(server.ip, server.port) %}
+
+{% block content %}
+
+    <table class="table table-bordered table-striped">
+        <tr>
+            <th width="50%">Server</th>
+            <th width="10%">Players</th>
+            <th width="20%">Top Player</th>
+            <th width="20%">Total Points</th>
+        </tr>
+        {% set top_player = renderutils.get_top_player(server)  %}
+        <tr>
+            <td class="server-name">{{ serverinfo.server_name }}</td>
+            <td>
+                <span style="color:{% if serverinfo.player_count == serverinfo.max_players %}red{% else %}#0080C0{% endif %}">
+                {{ serverinfo.player_count }} / {{ serverinfo.max_players }}
+            </span></td>
+            <td>{{ renderutils.get_steam_avatar(top_player.user.steamid, "mini-avatar")|safe }}
+                {{ top_player.user.last_seen_name }}</td>
+            <td>{{ '{:,}'.format(renderutils.get_all_points(server)) }}</td>
+        </tr>
+    </table>
+
+    {# Player table #}
+    <table class="table table-bordered table-striped" id="player_list">
+        <tr>
+            <th width="10%">Rank</th>
+            <th width="30%">Player</th>
+            <th width="15%">Points</th>
+            <th width="15%">Time</th>
+            <th width="10%">Kills</th>
+            <th width="10%">Deaths</th>
+            <th width="10%">KPD</th>
+        </tr>
+        {# Loop over players #}
+        {% for rank, player in enumerate(renderutils.get_players(server, current_page).items) %}
+            <tr>
+                <td>{{ (rank + 1) + ((current_page - 1) * 25) }}</td>
+                <td>{{ renderutils.get_steam_avatar(player.user.steamid, "mini-avatar")|safe }}
+                {{ player.user.last_seen_name }}</td>
+                <td>{{ player.points }}</td>
+                <td>TODO</td>
+                <td>{{ player.kills }}</td>
+                <td>{{ player.deaths }}</td>
+                <td>{{ round(player.kills / player.deaths, 2) }}</td>
+            </tr>
+        {% endfor %}
+    </table>
+
+{% endblock %}

@@ -35,3 +35,16 @@ def get_all_points(server: db.Server):
         .scalar()
 
     return points
+
+
+def get_players(server: db.Server, page=1):
+    """
+    Get all players on page `page` from server
+    """
+    pag = db.ServerUser.query \
+        .join(db.Server) \
+        .filter(db.ServerUser.server == server) \
+        .order_by(desc(db.ServerUser.points)) \
+        .paginate(page=page, per_page=25)
+
+    return pag

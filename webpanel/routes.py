@@ -1,7 +1,7 @@
 """
 Routes for the app.
 """
-from flask import Blueprint, render_template
+from flask import Blueprint, render_template, request
 from gunrskite import db
 from webpanel import srcds, renderutils
 
@@ -12,7 +12,14 @@ routes_bp = Blueprint("gunrskite", __name__)
 def server_info(server_id):
     # Get the server
     server = db.Server.query.filter(db.Server.id == server_id).first_or_404()
-    return render_template("serverinfo.html", server=server, srcds=srcds, renderutils=renderutils)
+    # Get the page args.
+    page = request.args.get("page", 1)
+    try:
+        page = int(page)
+    except:
+        page = 1
+    return render_template("serverinfo.html", server=server, srcds=srcds, renderutils=renderutils,
+                           current_page=1)
 
 
 @routes_bp.route("/")
